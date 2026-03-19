@@ -125,7 +125,8 @@ int rpn(vector<string> input){
             op = input[0];
             while(stack.size() > 1 &&
                   stack.back() != "(" &&
-                  priority_map[op] <= priority_map[stack.back()]){
+                  (op != "@" && priority_map[op] <= priority_map[stack.back()] || // 演算子の左結合
+                   op == "@" && priority_map[op] <  priority_map[stack.back()])){ // 単項マイナスの右結合
                 output.push_back(stack.back());
                 stack.pop_back();
             }
@@ -156,18 +157,17 @@ int rpn(vector<string> input){
 }
 
 int main() {
-    string input, no_space_input = "";
+    string input;
     cout << "input formula" << endl;
     getline(cin, input);
     cout << endl;
-    for(int i = 0; i < input.size(); i++){
-        if(input[i] != ' '){
-            no_space_input += input[i];
-        }
-    }
+    input.erase(remove_if(input.begin(), input.end(),
+        [](unsigned char c){ return isspace(c); }),
+        input.end());
+    cout << input << endl;
     // string input = "(3+4)";
     // cout << "input\n" << input << endl;
-    vector<string> parts = split_to_parts(no_space_input);
+    vector<string> parts = split_to_parts(input);
     int convert = rpn(parts);
 
 
